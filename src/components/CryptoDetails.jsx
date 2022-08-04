@@ -12,8 +12,9 @@ import {
   CheckOutlined, NumberOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
+import LineChart from './LineChart'
 
-import { useGetCryptoDetailsQuery } from '../services/cryptoApi'
+import { useGetCryptoDetailsQuery, useGetCryptoHistoryQuery } from '../services/cryptoApi'
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -24,14 +25,17 @@ const CryptoDetails = () => {
   const [timePeriod, setTimePeriod] = useState('7d');
   // const [cryptoDetails, setCryptoDetails] = useState({})
   const { data, isFetching } = useGetCryptoDetailsQuery(coinId);
+  const { data: coinHistory } = useGetCryptoHistoryQuery({coinId, timePeriod});
+  console.log('data', data);
   const cryptoDetails = data?.data?.coin;
-  console.log(useGetCryptoDetailsQuery(coinId))
+  console.log('useGetCryptoDetailsQuery',useGetCryptoDetailsQuery(coinId))
+  console.log('useGetCryptoHistoryQuery', useGetCryptoHistoryQuery({coinId, timePeriod}))
   // console.log('cryptoDetails', cryptoDetails)
   // useEffect(() => {
   //   setCryptoDetails(data?.data?.coin);
   // }, [data])
 
-
+  if(isFetching) return "Loading..."
   const time = ['3h', '24h', '7d', '30d', '1y', '3m', '3y', '5y'];
 
   const stats = [
@@ -49,8 +53,6 @@ const CryptoDetails = () => {
     { title: 'Total Supply', value: `$ ${millify(cryptoDetails.supply.total)}`, icon: <ExclamationCircleOutlined /> },
     { title: 'Circulating Supply', value: `$ ${millify(cryptoDetails.supply.circulating)}`, icon: <ExclamationCircleOutlined /> },
   ];
-
-  if(isFetching) return "Loading..."
   return (
     <Col className='coin-detail-container'>
       <Col className='coin-heading-container'>
@@ -74,7 +76,11 @@ const CryptoDetails = () => {
           </Option>
         ))}
       </Select>
-      {/* line chart */}
+      <LineChart
+        coinHistory={coinHistory}
+        currentPrice={millify(cryptoDetails.price)}
+        coinName={cryptoDetails.name}
+      />
       <Col className='stats-container'>
         <Col className='coin-value-statistics'>
           <Col className='coin-value-statistics-heading'>
