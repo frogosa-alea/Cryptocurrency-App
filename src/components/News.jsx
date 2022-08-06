@@ -5,6 +5,7 @@ import moment from 'moment'
 import { useGetCryptoNewsQuery } from '../services/cryptoNewsApi'
 import { useGetCryptosQuery } from '../services/cryptoApi'
 
+import { Loading } from './'
 const { Text, Title } = Typography;
 const { Option } = Select
 
@@ -15,8 +16,7 @@ const News = ({simplified}) => {
   const { data: cryptoNews } = useGetCryptoNewsQuery({ newsCategory: newsCategory, count: simplified ? 6 : 12})
   const { data: cryptosList } = useGetCryptosQuery(100)
 
-
-  if(!cryptoNews) return "Loading..."
+  if(!cryptoNews) return <Loading/>
   return (
     <Row gutter={[24,24]}>
       {!simplified &&
@@ -36,8 +36,14 @@ const News = ({simplified}) => {
       }
 
       {cryptoNews?.value?.map((news, index) => (
-        <Col key={index} xs={24} sm={12} lg={8}>
-          <Card hoverable className='news-card'>
+        <Col key={index} xs={24} sm={12} lg={12}>
+          <Card
+            hoverable
+            className='news-card'
+            style={{
+              borderRadius:'10px'
+            }}
+          >
             <a href={news.url} target="_blank" rel="noreferrer">
               <div className="news-image-container">
                 <Title className='news-title' level={4}>
